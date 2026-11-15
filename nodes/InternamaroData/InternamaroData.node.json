@@ -1,0 +1,18 @@
+{
+	"node": "n8n-nodes-internamaro-data.internamaroData",
+	"nodeVersion": "1.0",
+	"codexVersion": "1.0",
+	"categories": ["Data & Storage", "Development"],
+	"resources": {
+		"credentialDocumentation": [
+			{
+				"url": "https://github.com/internamaro/n8n-nodes-internamaro-data?tab=readme-ov-file#credentials"
+			}
+		],
+		"primaryDocumentation": [
+			{
+				"url": "https://github.com/internamaro/n8n-nodes-internamaro-data?tab=readme-ov-file"
+			}
+		]
+	}
+}

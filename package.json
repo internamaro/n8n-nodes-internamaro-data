@@ -1,0 +1,59 @@
+{
+	"name": "n8n-nodes-internamaro-data",
+	"version": "0.1.0",
+	"description": "n8n node for data post-processing with Apify Actors by ucchiii: HTML to Markdown, bulk HTTP requests, flatten JSON, filter rows, remove duplicates, Excel to JSON and domain availability. Runs on your own Apify account.",
+	"license": "MIT",
+	"homepage": "https://github.com/internamaro/n8n-nodes-internamaro-data#readme",
+	"keywords": [
+		"n8n-community-node-package",
+		"n8n",
+		"apify",
+		"html-to-markdown",
+		"json",
+		"csv",
+		"excel",
+		"deduplicate",
+		"domain-availability"
+	],
+	"author": {
+		"name": "ucchiii",
+		"email": "support@internamaro.com"
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/internamaro/n8n-nodes-internamaro-data.git"
+	},
+	"scripts": {
+		"build": "n8n-node build",
+		"build:watch": "tsc --watch",
+		"dev": "n8n-node dev",
+		"lint": "n8n-node lint",
+		"lint:fix": "n8n-node lint --fix",
+		"test": "n8n-node build && node --test test/*.test.js",
+		"release": "n8n-node release",
+		"prepublishOnly": "n8n-node prerelease"
+	},
+	"files": [
+		"dist"
+	],
+	"n8n": {
+		"n8nNodesApiVersion": 1,
+		"strict": true,
+		"credentials": [
+			"dist/credentials/InternamaroApifyApi.credentials.js"
+		],
+		"nodes": [
+			"dist/nodes/InternamaroData/InternamaroData.node.js"
+		]
+	},
+	"devDependencies": {
+		"@n8n/node-cli": "0.56.4",
+		"eslint": "9.39.4",
+		"prettier": "3.8.3",
+		"release-it": "20.2.0",
+		"typescript": "5.9.3"
+	},
+	"peerDependencies": {
+		"n8n-workflow": "*"
+	}
+}
