@@ -31,6 +31,12 @@ export const actorProperties: INodeProperties[] = [
 				description: 'Returns one item per domain with domain, available (true, false or null when unknown), status, tld, checkedAt and error; registrar and dates too when details is true',
 			},
 			{
+				name: 'Clean Google Maps Leads',
+				value: 'cleanGoogleMapsLeads',
+				action: 'Clean scraped map leads',
+				description: 'Returns one item per kept lead with name, category, phone (E.164), website, domain, address, rating, reviews and the source place ID',
+			},
+			{
 				name: 'Excel to JSON',
 				value: 'excelToJson',
 				action: 'Convert a spreadsheet to JSON',
@@ -47,6 +53,12 @@ export const actorProperties: INodeProperties[] = [
 				value: 'flattenJson',
 				action: 'Flatten JSON items',
 				description: 'Returns one flat item per input item: nested keys become columns like address.city, ready for CSV or a spreadsheet',
+			},
+			{
+				name: 'Google Maps Review Insights',
+				value: 'googleMapsReviewInsights',
+				action: 'Summarize place reviews',
+				description: 'Returns one item per place with review count, average stars, star distribution, recent averages, monthly trend, owner response rate and top positive and negative terms; lowSample is true under 20 reviews',
 			},
 			{
 				name: 'HTML to Markdown',
@@ -435,11 +447,11 @@ export const actorProperties: INodeProperties[] = [
 		},
 	},
 	{
-		displayName: 'Dataset to Flatten',
+		displayName: 'Or One Dataset',
 		name: 'flattenJson_datasetId',
 		type: 'string',
 		default: '',
-		description: 'An Apify dataset with nested items, for example the results of a scraper run. You can paste a dataset ID or URL. Use one source: a dataset, a JSON URL or pasted JSON.',
+		description: 'Same as Datasets to flatten, for a single dataset ID or URL (kept for existing tasks and API calls). Can be combined with the list.',
 		displayOptions: {
 			show: {
 				operation: [
@@ -478,6 +490,16 @@ export const actorProperties: INodeProperties[] = [
 				],
 				default: 'json',
 				description: 'How a list is written into its one column. \'join\' joins plain values with the join separator; lists that hold objects stay JSON text either way. Empty lists become empty cells.',
+			},
+			{
+				displayName: 'Datasets to Flatten',
+				name: 'flattenJson_datasetIds',
+				type: 'string',
+				default: '',
+				typeOptions: {
+					rows: 2,
+				},
+				description: 'Apify datasets with nested items, for example the results of scraper runs (up to 100). You can paste dataset IDs or URLs. Rows of all datasets go to one output dataset; with more than one dataset each row gets a _source column with its dataset ID. Use one kind of source: datasets, a JSON URL or pasted JSON. Separate values with commas or new lines.',
 			},
 			{
 				displayName: 'Join Separator',
@@ -519,11 +541,11 @@ export const actorProperties: INodeProperties[] = [
 		],
 	},
 	{
-		displayName: 'File URL',
+		displayName: 'Or One File URL',
 		name: 'filterRows_fileUrl',
 		type: 'string',
 		default: '',
-		description: 'Public http(s) link to the file to filter (up to 500 MB; JSON arrays up to 150 MB, NDJSON has no extra limit). Use this OR an Apify dataset.',
+		description: 'Same as File URLs, for a single link (kept for existing tasks and API calls). Can be combined with File URLs.',
 		displayOptions: {
 			show: {
 				operation: [
@@ -635,6 +657,16 @@ export const actorProperties: INodeProperties[] = [
 				],
 				default: 'auto',
 				description: 'Default auto: from the file extension, content type and content. Ignored for datasets.',
+			},
+			{
+				displayName: 'File URLs',
+				name: 'filterRows_fileUrls',
+				type: 'string',
+				default: '',
+				typeOptions: {
+					rows: 2,
+				},
+				description: 'Public http(s) links to the files to filter, one per line (up to 100 files, each up to 500 MB; JSON arrays up to 150 MB). The matching rows of all files go to one dataset; with more than one file each row gets a _source column with its file URL. Use files OR an Apify dataset. Separate values with commas or new lines.',
 			},
 			{
 				displayName: 'Keep Rows That Match',
@@ -833,11 +865,11 @@ export const actorProperties: INodeProperties[] = [
 		],
 	},
 	{
-		displayName: 'File URL',
+		displayName: 'Or One File URL',
 		name: 'excelToJson_fileUrl',
 		type: 'string',
 		default: '',
-		description: 'Public http(s) link to the file, up to 100 MB. An Excel file (.xlsx) becomes JSON; a JSON or NDJSON file becomes Excel.',
+		description: 'Same as File URLs, for a single link (kept for existing tasks and API calls). Can be combined with File URLs.',
 		required: true,
 		displayOptions: {
 			show: {
@@ -861,6 +893,16 @@ export const actorProperties: INodeProperties[] = [
 			},
 		},
 		options: [
+			{
+				displayName: 'File URLs',
+				name: 'excelToJson_fileUrls',
+				type: 'string',
+				default: '',
+				typeOptions: {
+					rows: 2,
+				},
+				description: 'Public http(s) links, one per line (up to 50 files, each up to 100 MB). An Excel file (.xlsx) becomes JSON rows plus a JSON file; a JSON or NDJSON file becomes an Excel file. With more than one file, each dataset row gets a _source field with its file URL. Separate values with commas or new lines. Separate values with commas or new lines.',
+			},
 			{
 				displayName: 'Header Row',
 				name: 'excelToJson_headerRow',
@@ -886,6 +928,178 @@ export const actorProperties: INodeProperties[] = [
 				type: 'string',
 				default: '',
 				description: 'Excel to JSON: sheet name (case does not matter). Empty = the first sheet; * = all sheets (each row gets a _sheet field and the JSON file is an object keyed by sheet name). JSON to Excel: name of the new sheet (default Data).',
+			},
+		],
+	},
+	{
+		displayName: 'Google Maps Datasets',
+		name: 'cleanGoogleMapsLeads_datasetIds',
+		type: 'string',
+		default: '',
+		typeOptions: {
+			rows: 2,
+		},
+		description: 'Dataset IDs (the \'defaultDatasetId\' of a finished run of the source Actor, e.g. \'WkzbQMuFYuamGv3YF\'). Datasets from your Google Maps scraper runs (e.g. compass/crawler-google-places). Several runs are merged and deduplicated. Separate values with commas or new lines.',
+		required: true,
+		displayOptions: {
+			show: {
+				operation: [
+					'cleanGoogleMapsLeads',
+				],
+			},
+		},
+	},
+	{
+		displayName: 'Options',
+		name: 'cleanGoogleMapsLeadsOptions',
+		type: 'collection',
+		placeholder: 'Add option',
+		default: {},
+		displayOptions: {
+			show: {
+				operation: [
+					'cleanGoogleMapsLeads',
+				],
+			},
+		},
+		options: [
+			{
+				displayName: 'Categories to Keep',
+				name: 'cleanGoogleMapsLeads_categoriesInclude',
+				type: 'string',
+				default: '',
+				typeOptions: {
+					rows: 2,
+				},
+				description: 'Keep places whose category contains any of these words (e.g. [\'dentist\', \'restaurant\']). Empty = all. Separate values with commas or new lines.',
+			},
+			{
+				displayName: 'Categories to Remove',
+				name: 'cleanGoogleMapsLeads_categoriesExclude',
+				type: 'string',
+				default: '',
+				typeOptions: {
+					rows: 2,
+				},
+				description: 'Remove places whose category contains any of these words. Separate values with commas or new lines.',
+			},
+			{
+				displayName: 'Default Country for Phones',
+				name: 'cleanGoogleMapsLeads_defaultCountry',
+				type: 'string',
+				default: '',
+				description: 'Two-letter country code used to read local phone numbers when the place has no country, for example US or GB',
+			},
+			{
+				displayName: 'Minimum Number of Reviews',
+				name: 'cleanGoogleMapsLeads_minReviews',
+				type: 'number',
+				default: 0,
+				typeOptions: {
+					minValue: 0,
+					numberPrecision: 0,
+				},
+				description: 'Keep places with at least this many reviews. Minimum 0. Empty = no filter.',
+			},
+			{
+				displayName: 'Minimum Rating',
+				name: 'cleanGoogleMapsLeads_minRating',
+				type: 'number',
+				default: 0,
+				typeOptions: {
+					minValue: 0,
+					maxValue: 5,
+				},
+				description: 'Keep places with at least this star rating. Allowed range 0 to 5 (maximum 5). Empty = no rating filter.',
+			},
+			{
+				displayName: 'Only Places with a Valid Phone',
+				name: 'cleanGoogleMapsLeads_requirePhone',
+				type: 'boolean',
+				default: false,
+				description: 'Whether to keep only leads whose phone number could be validated',
+			},
+			{
+				displayName: 'Only Places with a Website',
+				name: 'cleanGoogleMapsLeads_requireWebsite',
+				type: 'boolean',
+				default: false,
+				description: 'Whether to keep only leads that have a website',
+			},
+			{
+				displayName: 'Remove Closed Places',
+				name: 'cleanGoogleMapsLeads_excludeClosed',
+				type: 'boolean',
+				default: true,
+				description: 'Whether to drop places marked permanently or temporarily closed',
+			},
+		],
+	},
+	{
+		displayName: 'Google Maps Reviews Datasets',
+		name: 'googleMapsReviewInsights_datasetIds',
+		type: 'string',
+		default: '',
+		typeOptions: {
+			rows: 2,
+		},
+		description: 'Dataset IDs (the \'defaultDatasetId\' of a finished run of the source Actor, e.g. \'WkzbQMuFYuamGv3YF\'). Datasets from your Google Maps reviews scraper runs (e.g. compass/Google-Maps-Reviews-Scraper). Reviews are grouped by place. Separate values with commas or new lines.',
+		required: true,
+		displayOptions: {
+			show: {
+				operation: [
+					'googleMapsReviewInsights',
+				],
+			},
+		},
+	},
+	{
+		displayName: 'Options',
+		name: 'googleMapsReviewInsightsOptions',
+		type: 'collection',
+		placeholder: 'Add option',
+		default: {},
+		displayOptions: {
+			show: {
+				operation: [
+					'googleMapsReviewInsights',
+				],
+			},
+		},
+		options: [
+			{
+				displayName: 'Extra Stop Words',
+				name: 'googleMapsReviewInsights_stopwords',
+				type: 'string',
+				default: '',
+				typeOptions: {
+					rows: 2,
+				},
+				description: 'Additional words to ignore in term analysis, such as the place name or brand (lowercase, e.g. [\'starbucks\', \'cafe\']). Common English stop words are always ignored. Separate values with commas or new lines.',
+			},
+			{
+				displayName: 'Terms Per List',
+				name: 'googleMapsReviewInsights_topTerms',
+				type: 'number',
+				default: 20,
+				typeOptions: {
+					minValue: 0,
+					maxValue: 100,
+					numberPrecision: 0,
+				},
+				description: 'How many top positive and top negative words or two-word phrases to return for each place. Allowed range 0 to 100 (default 20); 0 returns no term lists.',
+			},
+			{
+				displayName: 'Trend Period',
+				name: 'googleMapsReviewInsights_periodMonths',
+				type: 'number',
+				default: 1,
+				typeOptions: {
+					minValue: 1,
+					maxValue: 12,
+					numberPrecision: 0,
+				},
+				description: 'Length of each trend bucket in months. 1 = monthly count and average rating, 3 = quarterly. Allowed range 1 to 12 (default 1).',
 			},
 		],
 	},
@@ -1105,6 +1319,10 @@ export const operationMeta: Record<string, OperationMeta> = {
 		],
 		optionsName: 'flattenJsonOptions',
 		fields: {
+			flattenJson_datasetIds: {
+				key: 'datasetIds',
+				kind: 'list',
+			},
 			flattenJson_datasetId: {
 				key: 'datasetId',
 				kind: 'string',
@@ -1152,6 +1370,10 @@ export const operationMeta: Record<string, OperationMeta> = {
 		],
 		optionsName: 'filterRowsOptions',
 		fields: {
+			filterRows_fileUrls: {
+				key: 'fileUrls',
+				kind: 'list',
+			},
 			filterRows_fileUrl: {
 				key: 'fileUrl',
 				kind: 'string',
@@ -1252,6 +1474,10 @@ export const operationMeta: Record<string, OperationMeta> = {
 		],
 		optionsName: 'excelToJsonOptions',
 		fields: {
+			excelToJson_fileUrls: {
+				key: 'fileUrls',
+				kind: 'list',
+			},
 			excelToJson_fileUrl: {
 				key: 'fileUrl',
 				kind: 'string',
@@ -1267,6 +1493,82 @@ export const operationMeta: Record<string, OperationMeta> = {
 			excelToJson_fileName: {
 				key: 'fileName',
 				kind: 'string',
+			},
+		},
+	},
+	cleanGoogleMapsLeads: {
+		actorId: 'ucchiii~maps-leads-cleaner',
+		main: [
+			'cleanGoogleMapsLeads_datasetIds',
+		],
+		sources: [
+			'cleanGoogleMapsLeads_datasetIds',
+		],
+		optionsName: 'cleanGoogleMapsLeadsOptions',
+		fields: {
+			cleanGoogleMapsLeads_datasetIds: {
+				key: 'datasetIds',
+				kind: 'list',
+			},
+			cleanGoogleMapsLeads_excludeClosed: {
+				key: 'excludeClosed',
+				kind: 'boolean',
+			},
+			cleanGoogleMapsLeads_requireWebsite: {
+				key: 'requireWebsite',
+				kind: 'boolean',
+			},
+			cleanGoogleMapsLeads_requirePhone: {
+				key: 'requirePhone',
+				kind: 'boolean',
+			},
+			cleanGoogleMapsLeads_minRating: {
+				key: 'minRating',
+				kind: 'number',
+			},
+			cleanGoogleMapsLeads_minReviews: {
+				key: 'minReviews',
+				kind: 'integer',
+			},
+			cleanGoogleMapsLeads_categoriesInclude: {
+				key: 'categoriesInclude',
+				kind: 'list',
+			},
+			cleanGoogleMapsLeads_categoriesExclude: {
+				key: 'categoriesExclude',
+				kind: 'list',
+			},
+			cleanGoogleMapsLeads_defaultCountry: {
+				key: 'defaultCountry',
+				kind: 'string',
+			},
+		},
+	},
+	googleMapsReviewInsights: {
+		actorId: 'ucchiii~reviews-insights',
+		main: [
+			'googleMapsReviewInsights_datasetIds',
+		],
+		sources: [
+			'googleMapsReviewInsights_datasetIds',
+		],
+		optionsName: 'googleMapsReviewInsightsOptions',
+		fields: {
+			googleMapsReviewInsights_datasetIds: {
+				key: 'datasetIds',
+				kind: 'list',
+			},
+			googleMapsReviewInsights_periodMonths: {
+				key: 'periodMonths',
+				kind: 'integer',
+			},
+			googleMapsReviewInsights_topTerms: {
+				key: 'topTerms',
+				kind: 'integer',
+			},
+			googleMapsReviewInsights_stopwords: {
+				key: 'stopwords',
+				kind: 'list',
 			},
 		},
 	},

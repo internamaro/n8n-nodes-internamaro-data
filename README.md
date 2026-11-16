@@ -1,7 +1,7 @@
 # n8n-nodes-internamaro-data
 
 An [n8n](https://n8n.io/) community node for data post-processing with Apify Actors published
-by [ucchiii](https://apify.com/ucchiii). One node, seven operations:
+by [ucchiii](https://apify.com/ucchiii). One node, nine operations:
 
 | Operation | Returns | Apify Actor |
 | --- | --- | --- |
@@ -11,6 +11,8 @@ by [ucchiii](https://apify.com/ucchiii). One node, seven operations:
 | Filter rows by conditions | Matching rows of a CSV/TSV/JSON/NDJSON file or an Apify dataset | [ucchiii/filter-rows](https://apify.com/ucchiii/filter-rows) |
 | Remove duplicate rows | Merged Apify datasets without duplicates | [ucchiii/dataset-dedup-merge](https://apify.com/ucchiii/dataset-dedup-merge) |
 | Convert a spreadsheet to JSON | One item per Excel row (or a link to an .xlsx made from JSON) | [ucchiii/excel-to-json](https://apify.com/ucchiii/excel-to-json) |
+| Clean scraped map leads | One item per kept lead from a Google Maps scraper dataset: name, E.164 phone, website, domain, rating | [ucchiii/maps-leads-cleaner](https://apify.com/ucchiii/maps-leads-cleaner) |
+| Summarize place reviews | One item per place: review count, average stars, trend, owner response rate, top terms | [ucchiii/reviews-insights](https://apify.com/ucchiii/reviews-insights) |
 | Check domain availability | One item per domain: available true/false/null, status, TLD | [ucchiii/domain-availability-api](https://apify.com/ucchiii/domain-availability-api) |
 
 Every dataset item of the Actor run becomes one n8n output item.

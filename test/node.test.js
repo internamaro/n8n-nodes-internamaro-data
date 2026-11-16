@@ -30,9 +30,11 @@ test('one operation per chosen Actor, all under user ucchiii', () => {
 	assert.deepEqual(ops, [
 		'bulkHttpRequest',
 		'checkDomainAvailability',
+		'cleanGoogleMapsLeads',
 		'excelToJson',
 		'filterRows',
 		'flattenJson',
+		'googleMapsReviewInsights',
 		'htmlToMarkdown',
 		'removeDuplicates',
 	]);
