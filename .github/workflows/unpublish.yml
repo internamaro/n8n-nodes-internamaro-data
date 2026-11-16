@@ -1,0 +1,26 @@
+# Manually remove one version from npm (npm unpublish policy: allowed for packages
+# with no dependents, e.g. within 72 hours of publishing). Used once on 2026-11-16 to
+# remove versions published before the maintainer email was changed.
+name: Unpublish version
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Exact version to unpublish (for example 0.1.0)'
+        required: true
+
+jobs:
+  unpublish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 'lts/*'
+          registry-url: 'https://registry.npmjs.org'
+      - name: Unpublish
+        run: npm unpublish "n8n-nodes-internamaro-data@${{ inputs.version }}"
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
