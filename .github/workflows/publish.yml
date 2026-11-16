@@ -16,6 +16,7 @@ on:
   push:
     tags:
       - '*.*.*'
+  workflow_dispatch:
 
 jobs:
   publish:
@@ -39,6 +40,7 @@ jobs:
         run: npm ci
 
       - name: Check tag matches package.json version
+        if: github.event_name == 'push'
         run: |
           v="$(node -p "require('./package.json').version")"
           [ "$v" = "${GITHUB_REF_NAME}" ] || { echo "tag ${GITHUB_REF_NAME} != package.json version $v"; exit 1; }
