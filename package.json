@@ -1,6 +1,6 @@
 {
 	"name": "n8n-nodes-internamaro-data",
-	"version": "0.1.1",
+	"version": "0.1.2",
 	"description": "n8n node for data post-processing with Apify Actors by ucchiii: HTML to Markdown, bulk HTTP requests, flatten JSON, filter rows, remove duplicates, Excel to JSON and domain availability. Runs on your own Apify account.",
 	"license": "MIT",
 	"homepage": "https://github.com/internamaro/n8n-nodes-internamaro-data#readme",
